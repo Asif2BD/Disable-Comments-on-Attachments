@@ -20,3 +20,5 @@ function disable_comments_on_attachments( $open, $post_id = null) {
     return $open;
 }
 add_filter( 'comments_open', 'disable_comments_on_attachments', 10 , 2 );
+
+?>
