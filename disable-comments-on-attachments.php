@@ -3,13 +3,13 @@
  * Plugin Name: Disable Comments on Attachments
  * Plugin URI: https://asif.im/
  * Description: Disable Comments on Attachments Pages
- * Version: 0.1.0
+ * Version: 0.1.1
  * Author: M Asif Rahman
  * Author URI: https://asif.im/
  * License: GPLv2+
  * Text Domain: disable-comments-on-attachments
  * Min WP Version: 2.5.0
- * Max WP Version: 4.7-alpha
+ * Max WP Version: 4.8
  */
 
 function disable_comments_on_attachments( $open, $post_id = null) {

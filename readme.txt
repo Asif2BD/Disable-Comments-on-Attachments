@@ -3,8 +3,8 @@ Contributors: Asif2BD
 Donate link: http://wordpressfoundation.org/donate/
 Tags: Comments, Attachments, Attachments Comment, Disable Comments, Disable Attachment Comments, Attachments Comment, Disable Media Comments
 Requires at least: 2.5.0
-Tested up to: 4.7-alpha
-Stable tag: 0.1.0
+Tested up to: 4.8
+Stable tag: 0.1.1
 License: GPLv2+
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -63,6 +63,8 @@ No, just activate the plugin.
 
 == Changelog ==
 
+= 0.1.1 - 2017-06-08 =
+* Compatible with WordPress 4.8
 
 = 0.1.0 =
 * Initial release
@@ -71,8 +73,8 @@ No, just activate the plugin.
 
 == Upgrade Notice ==
 
-= 0.1.0 =
-* Initial release
+= 0.1.1 =
+* Minor Release
 
 
 
