@@ -1,12 +1,13 @@
-=== Disable Comments on Attachments ===
+=== Disable Comments on Media Attachments ===
 Contributors: Asif2BD
 Donate link: http://wordpressfoundation.org/donate/
 Tags: Comments, Attachments, Attachments Comment, Disable Comments, Disable Attachment Comments, Attachments Comment, Disable Media Comments
 Requires at least: 2.5.0
-Tested up to: 4.8
-Stable tag: 0.1.1
-License: GPLv2+
-License URI: http://www.gnu.org/licenses/gpl-2.0.html
+Tested up to: 5.4
+Requires PHP: 5.4
+Stable tag: 0.2.0
+License: GPLv3
+License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
 Disable Comments on Media Attachments Pages, Sitewide, Just Activate The Plugin.
 
@@ -25,11 +26,11 @@ Just activate the plugin, the comment form on the Media Attachment Pages will be
 *   **[New]** Disable Comments on Attachments Pages
 
 
-**Check Our Other Plugins:**
+**Check My Other Plugins:**
 
+* **[Essential Addons for Elementor](https://wordpress.org/plugins/essential-addons-for-elementor-lite/)** 
+* **[NotificationX](https://wordpress.org/plugins/notificationx/)** 
 * **[Twitter Cards Meta](https://wordpress.org/plugins/twitter-cards-meta/)** 
-* **[Facebook Secret Meta](https://wordpress.org/plugins/facebook-secret-meta/)** 
-* **[WP Author Report Free](https://wordpress.org/plugins/wp-author-report-free/)** 
 * **[Analytify - Ultimate Google Analytics Dashboard](https://wordpress.org/plugins/wp-analytify/)**
 * **[WP Scheduled Posts](https://wordpress.org/plugins/wp-scheduled-posts/)**
 
@@ -63,6 +64,10 @@ No, just activate the plugin.
 
 == Changelog ==
 
+= 0.2.0 - 2020-04-03 =
+* News Feed added
+* Fully compatible with WordPress 5.4
+
 = 0.1.1 - 2017-06-08 =
 * Compatible with WordPress 4.8
 
@@ -73,8 +78,8 @@ No, just activate the plugin.
 
 == Upgrade Notice ==
 
-= 0.1.1 =
-* Minor Release
+= 0.2.0 =
+* Campatibility Release
 
 
 
