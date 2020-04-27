@@ -701,9 +701,9 @@ if( ! class_exists( 'DCMA_Plugin_Tracker') ) {
 			// @credit EDD
 			// Don't bother asking user to opt in if they're in local dev
 			$is_local = false;
-			if( stristr( network_site_url( '/' ), '.local' ) !== false ) {
-				$is_local = true;
-			}
+			// if( stristr( network_site_url( '/' ), '.local' ) !== false ) {
+			// 	$is_local = true;
+			// }
 			$is_local = apply_filters( 'wpins_is_local_' . $this->plugin_name, $is_local );
 			if ( $is_local ) {
 				$this->update_block_notice();
