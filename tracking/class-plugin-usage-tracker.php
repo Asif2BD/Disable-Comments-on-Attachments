@@ -10,9 +10,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-if( ! class_exists( 'ReviewX_Plugin_Tracker') ) {
+if( ! class_exists( 'DCMA_Plugin_Tracker') ) {
 	
-	class ReviewX_Plugin_Tracker {
+	class DCMA_Plugin_Tracker {
 		private $wpins_version = '2.0.0';
 		private $home_url = '';
 		private $plugin_file = '';
@@ -96,7 +96,7 @@ if( ! class_exists( 'ReviewX_Plugin_Tracker') ) {
 			// add_action( 'admin_init', array( $this, 'force_tracking' ) ); 
 			
 			// Display the admin notice on activation
-			add_action( 'wpdeveloper_optin_notice_for_' . $this->plugin_name, array( $this, 'optin_notice' ) );
+			add_action( 'admin_notices', array( $this, 'optin_notice' ) );
 			add_action( 'admin_notices', array( $this, 'marketing_notice' ) );
 
 			// Deactivation
