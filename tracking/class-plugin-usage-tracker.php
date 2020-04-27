@@ -752,7 +752,7 @@ if( ! class_exists( 'DCMA_Plugin_Tracker') ) {
 				$collect_message = __( 'We collect non-sensitive diagnostic data and plugin usage information. Your site URL, WordPress & PHP version, plugins & themes and email address to send you the discount coupon. This data lets us make sure this plugin always stays compatible with the most popular plugins and themes. No spam, I promise.', 'plugin-usage-tracker' );
 
 				$collect_message = apply_filters( 'wpins_collect_text_' . esc_attr( $this->plugin_name ), $collect_message ); 
-				$is_button_enabled = apply_filters( 'wpins_btn_for_' . esc_attr( $this->plugin_name ), true ); 
+				$is_button_enabled = apply_filters( 'wpins_button_for_' . esc_attr( $this->plugin_name ), true ); 
 				
 			?>		
 				<div class="notice notice-info updated put-dismiss-notice">
