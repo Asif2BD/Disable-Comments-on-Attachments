@@ -739,25 +739,38 @@ if( ! class_exists( 'DCMA_Plugin_Tracker') ) {
 					$notice_text = __( 'Thank you for installing our plugin. We would like to track its usage on your site. We don\'t record any sensitive data, only information regarding the WordPress environment and plugin settings, which we will use to help us make improvements to the plugin. Tracking is completely optional.', 'plugin-usage-tracker' );
 				} else {
 					// If we have option 1 for marketing, we include reference to sending product information here
-					$notice_text = __( 'Want to help make <strong>Disable Comments on Media Attachments</strong> even more awesome? Help us understand our user better. <a class="wpsp-insights-data-we-collect" href="#">What we collect.</a>', 'plugin-usage-tracker' );
+					$notice_text = __( 'Want to help make <strong>Disable Comments on Media Attachments</strong> even more awesome? Help us understand our user better. ', 'plugin-usage-tracker' );
+
+					$button_text = sprintf( 
+						'<a class="'. $this->plugin_name .'-insights-data-we-collect" href="#">%s</a>', 
+						apply_filters( 'wpins_button_text_' . esc_attr( $this->plugin_name ), __( 'What we collect.', 'plugin-usage-tracker' ) )
+					);
 				}
 				// And we allow you to filter the text anyway
-				$notice_text = apply_filters( 'wpins_notice_text_' . esc_attr( $this->plugin_name ), $notice_text ); ?>
-					
+				$notice_text = apply_filters( 'wpins_notice_text_' . esc_attr( $this->plugin_name ), $notice_text ); 
+
+				$collect_message = __( 'We collect non-sensitive diagnostic data and plugin usage information. Your site URL, WordPress & PHP version, plugins & themes and email address to send you the discount coupon. This data lets us make sure this plugin always stays compatible with the most popular plugins and themes. No spam, I promise.', 'plugin-usage-tracker' );
+
+				$collect_message = apply_filters( 'wpins_collect_text_' . esc_attr( $this->plugin_name ), $collect_message ); 
+				$is_button_enabled = apply_filters( 'wpins_btn_for_' . esc_attr( $this->plugin_name ), true ); 
+				
+			?>		
 				<div class="notice notice-info updated put-dismiss-notice">
-					<p><?php echo __( $notice_text ); ?></p>
-					<div class="wpsp-insights-data" style="display: none;">
-					<p><?php echo __( 'We collect non-sensitive diagnostic data and plugin usage information. Your site URL, WordPress & PHP version, plugins & themes and email address to send you the discount coupon. This data lets us make sure this plugin always stays compatible with the most popular plugins and themes. No spam, I promise.' ); ?></p>
+					<p><?php echo $notice_text . ( $is_button_enabled ? $button_text : '' ); ?></p>
+					<div class="<?php echo $this->plugin_name; ?>-insights-data" style="display: none;">
+					<p><?php echo ( $is_button_enabled ? $collect_message : '' ); ?></p>
 					</div>
 					<p>
 						<a href="<?php echo esc_url( $url_yes ); ?>" class="button-primary"><?php _e( 'Sure, I\'d like to help', 'plugin-usage-tracker' ); ?></a>
 						<a href="<?php echo esc_url( $url_no ); ?>" class="button-secondary"><?php _e( 'No Thanks', 'plugin-usage-tracker' ); ?></a>
 					</p>
-		            <?php echo "<script type='text/javascript'>jQuery('.wpsp-insights-data-we-collect').on('click', function(e) {
-		                    e.preventDefault();
-		                    jQuery('.wpsp-insights-data').slideToggle('fast');
-		                });
-		                </script>";?>
+					<?php 
+						echo "<script type='text/javascript'>jQuery('.". $this->plugin_name ."-insights-data-we-collect').on('click', function(e) {
+								e.preventDefault();
+								jQuery('.". $this->plugin_name ."-insights-data').slideToggle('fast');
+							});
+						</script>";
+					?>
 				</div>
 			<?php
 			}
