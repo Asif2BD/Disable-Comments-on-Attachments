@@ -14,7 +14,31 @@
 
 define("WPDEV_PLUGIN_PATH",plugin_dir_path(__FILE__)); #with trailing slash (/)
 
-include_once(WPDEV_PLUGIN_PATH.'wpdev-dashboard-widget.php');
+/**
+         * This function allows you to track usage of your plugin
+         * Place in your main plugin file
+         * Refer to https://wpdeveloper.net/support for help
+         */
+        if( ! class_exists( 'Plugin_Usage_Tracker') ) {
+        	include_once(WPDEV_PLUGIN_PATH.'tracking/class-plugin-usage-tracker.php');
+    
+        }
+        if( ! function_exists( 'dcoa_start_plugin_tracking' ) ) {
+            function dcoa_start_plugin_tracking() {
+                $wpins = new Plugin_Usage_Tracker(
+                    __FILE__,
+                    'https://app.wpinsight.com/api/insights',
+                    array(),
+                                true,
+                                true,
+                                1
+                                );
+            }
+                                dcoa_start_plugin_tracking();
+        }
+
+
+include_once(WPDEV_PLUGIN_PATH.'includes/wpdev-dashboard-widget.php');
 
 function disable_comments_on_attachments( $open, $post_id = null) {
     $post = get_post( $post_id );
