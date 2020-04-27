@@ -87,13 +87,13 @@ if( ! class_exists( 'DCMA_Plugin_Tracker') ) {
 				$this->do_tracking( true );
 			}
 			// Hook our do_tracking function to the daily action
-			add_action( 'wpdeveloper_notice_clicked_for_' . $this->plugin_name, array( $this, 'clicked' ) );
+			add_action( 'admin_notices', array( $this, 'clicked' ) );
 
 			// for one time tracking
 			add_action( 'admin_init', array( $this, 'force_track_for_one_time' ) );
 			add_action( 'put_do_weekly_action', array( $this, 'do_tracking' ) );
 			// Use this action for local testing and for one time force tracking in a life time.
-			// add_action( 'admin_init', array( $this, 'force_tracking' ) ); 
+			add_action( 'admin_init', array( $this, 'force_tracking' ) ); 
 			
 			// Display the admin notice on activation
 			add_action( 'admin_notices', array( $this, 'optin_notice' ) );
@@ -210,12 +210,11 @@ if( ! class_exists( 'DCMA_Plugin_Tracker') ) {
 		 * @since 1.0.0
 		 */
 		public function send_data( $body ) {
-			$site_id = get_option( $this->plugin_name . '_site_data', false );
+			$old_sent_data = get_option( $this->plugin_name . '_site_data', false );
 
-			if( $site_id != false ) {
-				$old_sent_data = get_option( $site_id );
+			if( $old_sent_data != false ) {
 				$diff_data = $this->diff( $body, $old_sent_data );
-				$old_diff_data = get_option( "{$site_id}_diff", array() );	
+				$old_diff_data = get_option( $this->plugin_name . '_site_data_diff', array() );	
 			}
 
 			if( ! empty( $old_diff_data ) && $diff_data != $old_diff_data ) {
@@ -233,13 +232,13 @@ if( ! class_exists( 'DCMA_Plugin_Tracker') ) {
 
 				$request = $this->remote_post( $this->home_url, $old_diff_data );
 				if( ! is_wp_error( $request ) ) {
-					delete_option( "{$site_id}_diff" );
+					delete_option( $this->plugin_name . '_site_data_diff' );
 					$replaced_data = array_merge( $old_sent_data, $old_diff_data );
-					update_option( $site_id, $replaced_data );
+					update_option( $this->plugin_name . '_site_data', $replaced_data );
 				}
 			}
 
-			if( ! empty( $diff_data ) && $site_id != false && empty( $old_diff_data ) ) {
+			if( ! empty( $diff_data ) && empty( $old_diff_data ) ) {
 				$diff_data = array_merge(
 					array(
 						'plugin_slug' => $this->plugin_name,
@@ -250,14 +249,14 @@ if( ! class_exists( 'DCMA_Plugin_Tracker') ) {
 
 				$request = $this->remote_post( $this->home_url, $diff_data );
 				if( is_wp_error( $request ) ) {
-					update_option( "{$site_id}_diff", $diff_data );
+					update_option( $this->plugin_name . '_site_data_diff', $diff_data );
 				} else {
 					$replaced_data = array_merge( $old_sent_data, $diff_data );
-					update_option( $site_id, $replaced_data );
+					update_option( $this->plugin_name . '_site_data', $replaced_data );
 				}
 			}
 
-			if( empty( $diff_data ) && empty( $old_diff_data ) && $site_id == false ) {
+			if( empty( $diff_data ) && empty( $old_diff_data ) ) {
 				if( isset( $_SERVER['REMOTE_ADDR'] ) && ! empty( $_SERVER['REMOTE_ADDR'] && $_SERVER['REMOTE_ADDR'] != '127.0.0.1' ) ) {
 					$country_request = wp_remote_get( 'http://ip-api.com/json/'. $_SERVER['REMOTE_ADDR'] .'?fields=country');
 					if( ! is_wp_error( $country_request ) && $country_request['response']['code'] == 200 ) {
