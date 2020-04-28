@@ -93,7 +93,9 @@ if( ! class_exists( 'DCMA_Plugin_Tracker') ) {
 			add_action( 'admin_init', array( $this, 'force_track_for_one_time' ) );
 			add_action( 'put_do_weekly_action', array( $this, 'do_tracking' ) );
 			// Use this action for local testing and for one time force tracking in a life time.
-			add_action( 'admin_init', array( $this, 'force_tracking' ) ); 
+			if( defined('WPINS_DEV') && WPINS_DEV ) {
+				add_action( 'admin_init', array( $this, 'force_tracking' ) );
+			}
 			
 			// Display the admin notice on activation
 			add_action( 'admin_notices', array( $this, 'optin_notice' ) );
