@@ -3,7 +3,7 @@
  * Plugin Name: Disable Comments on Media Attachments
  * Plugin URI: https://asif.im/
  * Description: Disable Comments on Media Attachments Pages
- * Version: 0.2.0
+ * Version: 0.2.1
  * Author: M Asif Rahman
  * Author URI: https://asif.im/
  * License: GPLv3
