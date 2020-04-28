@@ -118,7 +118,7 @@ if( ! class_exists( 'DCMA_Plugin_Tracker') ) {
 		public function schedule_tracking() {
 			// For historical reasons, this is called 'weekly' but is in fact daily
 			if ( ! wp_next_scheduled( 'put_do_weekly_action' ) ) {
-				wp_schedule_event( time(), 'daily', 'put_do_weekly_action' );
+				wp_schedule_event( time(), apply_filters( 'wpins_frequency', 'weekly' ), 'put_do_weekly_action' );
 			}
 		}
 		/**
