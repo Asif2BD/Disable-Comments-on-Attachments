@@ -5,7 +5,7 @@ Tags: Comments, Attachments, Attachments Comment, Disable Comments, Disable Atta
 Requires at least: 2.5.0
 Tested up to: 5.4
 Requires PHP: 5.4
-Stable tag: 0.2.0
+Stable tag: 0.2.1
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -64,6 +64,9 @@ No, just activate the plugin.
 
 == Changelog ==
 
+= 0.2.1 - 2020-04-28 =
+* Optin added with permission.
+
 = 0.2.0 - 2020-04-03 =
 * News Feed added
 * Fully compatible with WordPress 5.4
@@ -78,8 +81,8 @@ No, just activate the plugin.
 
 == Upgrade Notice ==
 
-= 0.2.0 =
-* Campatibility Release
+= 0.2.1 =
+* Minor release.
 
 
 
