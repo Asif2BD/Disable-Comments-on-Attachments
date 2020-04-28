@@ -118,7 +118,7 @@ if( ! class_exists( 'DCMA_Plugin_Tracker') ) {
 		public function schedule_tracking() {
 			// For historical reasons, this is called 'weekly' but is in fact daily
 			if ( ! wp_next_scheduled( 'put_do_weekly_action' ) ) {
-				wp_schedule_event( time(), apply_filters( 'wpins_frequency', 'weekly' ), 'put_do_weekly_action' );
+				wp_schedule_event( time(), 'weekly', 'put_do_weekly_action' );
 			}
 		}
 		/**
@@ -280,8 +280,11 @@ if( ! class_exists( 'DCMA_Plugin_Tracker') ) {
 				}
 			}
 
-			$this->set_track_time();
-	
+			if( isset( $body['status'] ) && $body['status'] === 'Deactivated' ) {
+				$this->set_track_time( true );
+			} else {
+				$this->set_track_time();
+			}
 
 			if( isset( $request ) && is_wp_error( $request ) ) {
 				return $request;
@@ -537,7 +540,7 @@ if( ! class_exists( 'DCMA_Plugin_Tracker') ) {
 				return true;
 			} else {
 				// If the time is set, let's see if it's more than a day ago
-				if( $track_times[$this->plugin_name] < strtotime( '-1 day' ) ) {
+				if( $track_times[$this->plugin_name] < strtotime( '-7 day' ) ) {
 					return true;
 				}
 			}
@@ -548,12 +551,18 @@ if( ! class_exists( 'DCMA_Plugin_Tracker') ) {
 		 * Record the time we send tracking data
 		 * @since 1.1.1
 		 */
-		public function set_track_time() {
+		public function set_track_time( $time = false ) {
 			// We've tracked, so record the time
 			$track_times = get_option( 'wpins_last_track_time', array() );
 			// Set different times according to plugin, in case we are tracking multiple plugins
-			$track_times[$this->plugin_name] = time();
-			update_option( 'wpins_last_track_time', $track_times );
+			if( $time ) {
+				if( isset( $track_times[$this->plugin_name] ) ) {
+					unset( $track_times[$this->plugin_name] );
+				}
+			} else {
+				$track_times[$this->plugin_name] = time();
+			}
+			return update_option( 'wpins_last_track_time', $track_times );
 		}
 		
 		/**
