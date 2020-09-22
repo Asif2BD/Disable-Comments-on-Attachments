@@ -3,9 +3,9 @@ Contributors: Asif2BD
 Donate link: http://wordpressfoundation.org/donate/
 Tags: Comments, Attachments, Attachments Comment, Disable Comments, Disable Attachment Comments, Attachments Comment, Disable Media Comments
 Requires at least: 2.5.0
-Tested up to: 5.4
+Tested up to: 5.5.1
 Requires PHP: 5.4
-Stable tag: 0.2.1
+Stable tag: 0.2.2
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -28,9 +28,9 @@ Just activate the plugin, the comment form on the Media Attachment Pages will be
 
 **Check My Other Plugins:**
 
-* **[Essential Addons for Elementor](https://wordpress.org/plugins/essential-addons-for-elementor-lite/)** 
-* **[NotificationX](https://wordpress.org/plugins/notificationx/)** 
-* **[Twitter Cards Meta](https://wordpress.org/plugins/twitter-cards-meta/)** 
+* **[Essential Addons for Elementor](https://wordpress.org/plugins/essential-addons-for-elementor-lite/)**
+* **[NotificationX](https://wordpress.org/plugins/notificationx/)**
+* **[Twitter Cards Meta](https://wordpress.org/plugins/twitter-cards-meta/)**
 * **[Analytify - Ultimate Google Analytics Dashboard](https://wordpress.org/plugins/wp-analytify/)**
 * **[WP Scheduled Posts](https://wordpress.org/plugins/wp-scheduled-posts/)**
 
@@ -40,7 +40,7 @@ Just activate the plugin, the comment form on the Media Attachment Pages will be
 
 = Modern Way: =
 1. Go to the WordPress Dashboard "Add New Plugin" section.
-2. Search For "Disable Comments on Attachments". 
+2. Search For "Disable Comments on Attachments".
 3. Install, then Activate it.
 
 
@@ -63,6 +63,10 @@ No, just activate the plugin.
 
 
 == Changelog ==
+
+= 0.2.2 - 2020-04-28 =
+* Optin improved.
+* Tested upto WP5.5
 
 = 0.2.1 - 2020-04-28 =
 * Optin added with permission.

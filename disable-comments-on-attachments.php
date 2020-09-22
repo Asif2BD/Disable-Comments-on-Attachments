@@ -24,14 +24,16 @@ if( ! class_exists( 'DCMA_Plugin_Tracker') ) {
 }
 if( ! function_exists( 'dcoa_start_plugin_tracking' ) ) {
     function dcoa_start_plugin_tracking() {
-        $wpins = new DCMA_Plugin_Tracker(
-            __FILE__,
-            'https://app.wpinsight.com/api/insights',
-            array(),
-            true,
-            true,
-            1
-        );
+        $tracker = DCMA_Plugin_Tracker::get_instance( __FILE__, [
+			'opt_in' => true,
+			'goodbye_form' => true,
+			'secret' => '1550c146d285339a202b'
+		] );
+		$tracker->set_notice_options(array(
+			'notice' => __( 'Want to help make <strong>Disable Comments on Media Attachments</strong> even more awesome? Help us understand our user better.', 'disable-comments-on-attachments' ),
+			'extra_notice' => __( 'We collect non-sensitive diagnostic data and plugin usage information. Your site URL, WordPress & PHP version, plugins & themes and email address to send you the discount coupon. This data lets us make sure this plugin always stays compatible with the most popular plugins and themes. No spam, I promise.', 'disable-comments-on-attachments' ),
+		));
+		$tracker->init();
     }
     dcoa_start_plugin_tracking();
 }
