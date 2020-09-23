@@ -613,7 +613,7 @@ if( ! class_exists('DCMA_Plugin_Tracker') ) :
 					$output .= '<p>'. $extra_notice_text .'</p>';
 				$output .= '</div>';
 				$output .= '<p>';
-					$output .= '<a href="'. esc_url( $url_yes ) .'" class="button-primary">'. $this->notice_options['yes'] .'</a>';
+					$output .= '<a href="'. esc_url( $url_yes ) .'" class="button-primary">'. $this->notice_options['yes'] .'</a>&nbsp;';
 					$output .= '<a href="'. esc_url( $url_no ) .'" class="button-secondary">'. $this->notice_options['no'] .'</a>';
 				$output .= '</p>';
 				$output .= "<script type='text/javascript'>jQuery('.wpinsights-". $this->plugin_name ."-collect').on('click', function(e) {e.preventDefault();jQuery('.wpinsights-data').slideToggle('fast');});</script>";
