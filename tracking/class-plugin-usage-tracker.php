@@ -137,13 +137,10 @@ if( ! class_exists('DCMA_Plugin_Tracker') ) :
 		 */
 		public function init(){
 			$this->clicked();
-			if( has_action( $this->event_hook ) ) {
-				add_action( $this->event_hook, array( $this, 'do_tracking' ) );
-			}
+			add_action( $this->event_hook, array( $this, 'do_tracking' ) );
+			// For Test
 			// add_action( 'admin_init', array( $this, 'force_tracking' ) );
-			// add_action( 'wpdeveloper_optin_notice_for_' . $this->plugin_name, array( $this, 'optin_notice' ) );
 			add_action( 'admin_notices', array( $this, 'notice' ) );
-
 			/**
 			 * Deactivation Reason Form and Submit Data to Insights.
 			 */
