@@ -25,9 +25,9 @@ if( ! class_exists( 'DCMA_Plugin_Tracker') ) {
 if( ! function_exists( 'dcoa_start_plugin_tracking' ) ) {
     function dcoa_start_plugin_tracking() {
         $tracker = DCMA_Plugin_Tracker::get_instance( __FILE__, [
-			'opt_in' => true,
+			'opt_in'       => true,
 			'goodbye_form' => true,
-			'secret' => '1550c146d285339a202b'
+			'item_id'      => '1550c146d285339a202b'
 		] );
 		$tracker->set_notice_options(array(
 			'notice' => __( 'Want to help make <strong>Disable Comments on Media Attachments</strong> even more awesome? Help us understand our user better.', 'disable-comments-on-attachments' ),

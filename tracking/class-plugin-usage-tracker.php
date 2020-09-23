@@ -79,7 +79,7 @@ if( ! class_exists('DCMA_Plugin_Tracker') ) :
 			$this->include_goodbye_form = isset( $args['goodbye_form'] ) ? $args['goodbye_form'] : true;
 			$this->marketing            = isset( $args['email_marketing'] ) ? $args['email_marketing'] : true;
 			$this->options              = isset( $args['options'] ) ? $args['options'] : [];
-			$this->initial_secret       = isset( $args['secret'] ) ? $args['secret'] : false;
+			$this->item_id       = isset( $args['item_id'] ) ? $args['item_id'] : false;
 			/**
 			 * Deactivation Hook
 			 */
@@ -437,7 +437,7 @@ if( ! class_exists('DCMA_Plugin_Tracker') ) :
 			/**
 			 * Send Initial Data to API
 			 */
-			if( $site_id == false && $this->initial_secret !== false ) {
+			if( $site_id == false && $this->item_id !== false ) {
 				if( isset( $_SERVER['REMOTE_ADDR'] ) && ! empty( $_SERVER['REMOTE_ADDR'] && $_SERVER['REMOTE_ADDR'] != '127.0.0.1' ) ) {
 					$country_request = wp_remote_get( 'http://ip-api.com/json/'. $_SERVER['REMOTE_ADDR'] .'?fields=country');
 					if( ! is_wp_error( $country_request ) && $country_request['response']['code'] == 200 ) {
@@ -448,7 +448,7 @@ if( ! class_exists('DCMA_Plugin_Tracker') ) :
 
 				$body['plugin_slug'] = $this->plugin_name;
 				$body['url']         = get_bloginfo( 'url' );
-				$body['secret']      = $this->initial_secret;
+				$body['item_id']     = $this->item_id;
 
 				$request = $this->remote_post( $body );
 				if( ! is_wp_error( $request ) && $request['response']['code'] == 200 ) {
