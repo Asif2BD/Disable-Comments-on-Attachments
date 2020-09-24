@@ -532,8 +532,6 @@ if( ! class_exists('DCMA_Plugin_Tracker') ) :
 			));
 
 			$request = wp_remote_post( esc_url( self::API_URL ), $args );
-			dlog( $data );
-			dlog( $request );
 			if( is_wp_error( $request ) || ( isset( $request['response'], $request['response']['code'] ) && $request['response']['code'] != 200 ) ) {
 				return new WP_Error( 500, 'Something went wrong.' );
 			}
