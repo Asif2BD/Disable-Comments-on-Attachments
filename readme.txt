@@ -64,7 +64,7 @@ No, just activate the plugin.
 
 == Changelog ==
 
-= 0.2.2 - 2020-04-28 =
+= 0.2.2 - 2020-09-24 =
 * Optin improved.
 * Tested upto WP5.5
 
