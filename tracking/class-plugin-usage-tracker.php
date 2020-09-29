@@ -146,7 +146,7 @@ if( ! class_exists('DCMA_Plugin_Tracker') ) :
 			 */
 			add_filter( 'plugin_action_links_' . plugin_basename( $this->plugin_file ), array( $this, 'deactivate_action_links' ) );
 			add_action( 'admin_footer-plugins.php', array( $this, 'deactivate_reasons_form' ) );
-			add_action( 'wp_ajax_deactivation_form__' . esc_attr( $this->plugin_name ), array( $this, 'deactivate_reasons_form_submit' ) );
+			add_action( 'wp_ajax_deactivation_form_' . esc_attr( $this->plugin_name ), array( $this, 'deactivate_reasons_form_submit' ) );
 		}
 		/**
 		 * For Redirecting Current Page without Arguments!
@@ -582,9 +582,9 @@ if( ! class_exists('DCMA_Plugin_Tracker') ) :
 			}
 			// Don't bother asking user to opt in if they're in local dev
 			$is_local = false;
-			//if( stristr( network_site_url( '/' ), '.local' ) !== false ) {
-			//	$is_local = true;
-			//}
+			if( stristr( network_site_url( '/' ), '.local' ) !== false ) {
+				$is_local = true;
+			}
 			$is_local = apply_filters( 'wpins_is_local_' . $this->plugin_name, $is_local );
 			if( $is_local ) {
 				$this->update_block_notice();
