@@ -20,11 +20,12 @@ if( ! class_exists('DCMA_Plugin_Tracker') ) :
 		/**
 		 * WP Insights Version
 		 */
-		const WPINS_VERSION = '3.0.0';
+		const WPINS_VERSION = '3.0.1';
 		/**
 		 * API URL
 		 */
-		const API_URL = 'https://us-east1-wpinsight-saas.cloudfunctions.net/task-generator';
+		const API_URL = 'https://us-east1-wpinsight-saas.cloudfunctions.net/insert-plugin-data-mysql';
+		// const API_URL = 'https://send.wpinsight.com/process-plugin-data';
 		/**
 		 * Installed Plugin File
 		 *
@@ -69,17 +70,17 @@ if( ! class_exists('DCMA_Plugin_Tracker') ) :
 			$this->disabled_wp_cron     = defined('DISABLE_WP_CRON') && DISABLE_WP_CRON == true;
 			$this->enable_self_cron     = $this->disabled_wp_cron == true ? true : false;
 
-			$this->event_hook = 'put_do_weekly_action';
-			// $this->event_hook = 'put_do_daily_action_for_' . $this->plugin_name;
-			// if( isset( $args['recurrence'] ) && $args['recurrence'] !== 'daily' ) {
-			// 	$this->event_hook = 'put_do_'. $args['recurrence'] .'_action_for_' . $this->plugin_name;
-			// }
+			$this->event_hook 			= 'put_do_weekly_action';
 
 			$this->require_optin        = isset( $args['opt_in'] ) ? $args['opt_in'] : true;
 			$this->include_goodbye_form = isset( $args['goodbye_form'] ) ? $args['goodbye_form'] : true;
 			$this->marketing            = isset( $args['email_marketing'] ) ? $args['email_marketing'] : true;
 			$this->options              = isset( $args['options'] ) ? $args['options'] : [];
-			$this->item_id       = isset( $args['item_id'] ) ? $args['item_id'] : false;
+			$this->item_id              = isset( $args['item_id'] ) ? $args['item_id'] : false;
+			/**
+			 * Activation Hook
+			 */
+			register_activation_hook( $this->plugin_file, array( $this, 'activate_this_plugin' ) );
 			/**
 			 * Deactivation Hook
 			 */
@@ -96,6 +97,18 @@ if( ! class_exists('DCMA_Plugin_Tracker') ) :
 			if ( ! wp_next_scheduled( $this->event_hook ) ) {
 				wp_schedule_event( time(), $this->recurrence, $this->event_hook );
 			}
+		}
+		/**
+		 * Add the schedule event if the plugin is tracked.
+		 *
+		 * @return void
+		 */
+		public function activate_this_plugin(){
+			$allow_tracking = $this->is_tracking_allowed();
+			if( ! $allow_tracking ) {
+				return;
+			}
+			$this->schedule_tracking();
 		}
 		/**
 		 * Remove the schedule event when plugin is deactivated and send the deactivated reason to inishghts if user submitted.
@@ -330,7 +343,9 @@ if( ! class_exists('DCMA_Plugin_Tracker') ) :
 				}
 				$current_user = wp_get_current_user();
 				$email = $current_user->user_email;
-				$body['email'] = $email;
+				if( is_email( $email ) ) {
+					$body['email'] = $email;
+				}
 			}
 			$body['marketing_method'] = $this->marketing;
 			$body['server'] = isset( $_SERVER['SERVER_SOFTWARE'] ) ? $_SERVER['SERVER_SOFTWARE'] : '';
@@ -342,7 +357,7 @@ if( ! class_exists('DCMA_Plugin_Tracker') ) :
 				include ABSPATH . '/wp-admin/includes/plugin.php';
 			}
 			$plugins = array_keys( get_plugins() );
-			$active_plugins = get_option( 'active_plugins', array() );
+			$active_plugins = is_network_admin() ? array_keys( get_site_option( 'active_sitewide_plugins', array() ) ) : get_option( 'active_plugins', array() );
 			foreach ( $plugins as $key => $plugin ) {
 				if ( in_array( $plugin, $active_plugins ) ) {
 					unset( $plugins[$key] );
@@ -361,7 +376,7 @@ if( ! class_exists('DCMA_Plugin_Tracker') ) :
 			 */
 			$plugin = $this->plugin_data();
 			if( empty( $plugin ) ) {
-				$body['message'] .= __( 'We can\'t detect any plugin information. This is most probably because you have not included the code in the plugin main file.', 'plugin-usage-tracker' );
+				$body['message'] .= __( 'We can\'t detect any plugin information. This is most probably because you have not included the code in the plugin main file.', 'disable-comments' );
 				$body['status'] = 'NOT FOUND';
 			} else {
 				if( isset( $plugin['Name'] ) ) {
@@ -428,9 +443,15 @@ if( ! class_exists('DCMA_Plugin_Tracker') ) :
 			/**
 			 * Get SITE ID
 			 */
-			$site_id_key = "wpins_{$this->plugin_name}_site_id";
-			$site_id = get_option( $site_id_key, false );
-			$failed_data = [];
+			$site_id_key       = "wpins_{$this->plugin_name}_site_id";
+			$site_id           = get_option( $site_id_key, false );
+			$failed_data       = [];
+			$site_url          = get_bloginfo( 'url' );
+			$original_site_url = get_option( "wpins_{$this->plugin_name}_original_url", false );
+
+			if( ( $original_site_url === false || $original_site_url != $site_url ) && version_compare( $body['wpins_version'], '3.0.1', '>=' ) ) {
+				$site_id = false;
+			}
 			/**
 			 * Send Initial Data to API
 			 */
@@ -444,7 +465,7 @@ if( ! class_exists('DCMA_Plugin_Tracker') ) :
 				}
 
 				$body['plugin_slug'] = $this->plugin_name;
-				$body['url']         = get_bloginfo( 'url' );
+				$body['url']         = $site_url;
 				$body['item_id']     = $this->item_id;
 
 				$request = $this->remote_post( $body );
@@ -452,6 +473,7 @@ if( ! class_exists('DCMA_Plugin_Tracker') ) :
 					$retrieved_body = json_decode( wp_remote_retrieve_body( $request ), true );
 					if( is_array( $retrieved_body ) && isset( $retrieved_body['siteId'] ) ) {
 						update_option( $site_id_key, $retrieved_body['siteId'] );
+						update_option( "wpins_{$this->plugin_name}_original_url", $site_url );
 						update_option( "wpins_{$this->plugin_name}_{$retrieved_body['siteId']}", $body );
 					}
 				} else {
@@ -459,7 +481,7 @@ if( ! class_exists('DCMA_Plugin_Tracker') ) :
 				}
 			}
 
-			$site_id_data_key = "wpins_{$this->plugin_name}_{$site_id}";
+			$site_id_data_key        = "wpins_{$this->plugin_name}_{$site_id}";
 			$site_id_data_failed_key = "wpins_{$this->plugin_name}_{$site_id}_send_failed";
 
 			if( $site_id != false ) {
@@ -472,9 +494,12 @@ if( ! class_exists('DCMA_Plugin_Tracker') ) :
 			}
 
 			if( ! empty( $failed_data ) && $site_id != false ) {
-				$failed_data['plugin_slug'] = $this->plugin_name;
-				$failed_data['url']         = get_bloginfo( 'url' );
-				$failed_data['site_id']     = $site_id;
+				$failed_data['plugin_slug']  = $this->plugin_name;
+				$failed_data['url']          = $site_url;
+				$failed_data['site_id']      = $site_id;
+				if( $original_site_url != false ) {
+					$failed_data['original_url'] = $original_site_url;
+				}
 
 				$request = $this->remote_post( $failed_data );
 				if( ! is_wp_error( $request ) ) {
@@ -485,9 +510,12 @@ if( ! class_exists('DCMA_Plugin_Tracker') ) :
 			}
 
 			if( ! empty( $diff_data ) && $site_id != false && empty( $failed_data ) ) {
-				$diff_data['plugin_slug'] = $this->plugin_name;
-				$diff_data['url']         = get_bloginfo( 'url' );
-				$diff_data['site_id']     = $site_id;
+				$diff_data['plugin_slug']  = $this->plugin_name;
+				$diff_data['url']          = $site_url;
+				$diff_data['site_id']      = $site_id;
+				if( $original_site_url != false ) {
+					$diff_data['original_url'] = $original_site_url;
+				}
 
 				$request = $this->remote_post( $diff_data );
 				if( is_wp_error( $request ) ) {
@@ -530,7 +558,6 @@ if( ! class_exists('DCMA_Plugin_Tracker') ) :
 				'body'        => $data,
 				'user-agent'  => 'PUT/1.0.0; ' . get_bloginfo( 'url' )
 			));
-
 			$request = wp_remote_post( esc_url( self::API_URL ), $args );
 			if( is_wp_error( $request ) || ( isset( $request['response'], $request['response']['code'] ) && $request['response']['code'] != 200 ) ) {
 				return new WP_Error( 500, 'Something went wrong.' );
@@ -618,9 +645,9 @@ if( ! class_exists('DCMA_Plugin_Tracker') ) :
 		 */
 		public function set_notice_options( $options = [] ){
 			$default_options = [
-				'consent_button_text' => __( 'What we collect.', 'wpinsight' ),
-				'yes'                 => __( 'Sure, I\'d like to help', 'wpinsight' ),
-				'no'                  => __( 'No Thanks.', 'wpinsight' ),
+				'consent_button_text' => __( 'What we collect.', 'disable-comments' ),
+				'yes'                 => __( 'Sure, I\'d like to help', 'disable-comments' ),
+				'no'                  => __( 'No Thanks.', 'disable-comments' ),
 			];
 			$options = wp_parse_args( $options, $default_options );
 			$this->notice_options = $options;
@@ -713,20 +740,20 @@ if( ! class_exists('DCMA_Plugin_Tracker') ) :
 		 */
 		public function deactivation_reasons() {
 			$form = array();
-			$form['heading'] = __( 'Sorry to see you go', 'plugin-usage-tracker' );
-			$form['body'] = __( 'Before you deactivate the plugin, would you quickly give us your reason for doing so?', 'plugin-usage-tracker' );
+			$form['heading'] = __( 'Sorry to see you go', 'disable-comments' );
+			$form['body'] = __( 'Before you deactivate the plugin, would you quickly give us your reason for doing so?', 'disable-comments' );
 
 			$form['options'] = array(
-				__( 'I no longer need the plugin', 'plugin-usage-tracker' ),
+				__( 'I no longer need the plugin', 'disable-comments' ),
 				[
-					'label' => __( 'I found a better plugin', 'plugin-usage-tracker' ),
-					'extra_field' => __( 'Please share which plugin', 'plugin-usage-tracker' )
+					'label' => __( 'I found a better plugin', 'disable-comments' ),
+					'extra_field' => __( 'Please share which plugin', 'disable-comments' )
 				],
-				__( "I couldn't get the plugin to work", 'plugin-usage-tracker' ),
-				__( 'It\'s a temporary deactivation', 'plugin-usage-tracker' ),
+				__( "I couldn't get the plugin to work", 'disable-comments' ),
+				__( 'It\'s a temporary deactivation', 'disable-comments' ),
 				[
-					'label' => __( 'Other', 'plugin-usage-tracker' ),
-					'extra_field' => __( 'Please share the reason', 'plugin-usage-tracker' ),
+					'label' => __( 'Other', 'disable-comments' ),
+					'extra_field' => __( 'Please share the reason', 'disable-comments' ),
 					'type' => 'textarea'
 				]
 			);
@@ -768,7 +795,7 @@ if( ! class_exists('DCMA_Plugin_Tracker') ) :
 				$html .= '</ul></div><!-- .wpinsights-'. $class_plugin_name .'-goodbye-options -->';
 			}
 			$html .= '</div><!-- .wpinsights-goodbye-form-body -->';
-			$html .= '<p class="deactivating-spinner"><span class="spinner"></span> ' . __( 'Submitting form', 'plugin-usage-tracker' ) . '</p>';
+			$html .= '<p class="deactivating-spinner"><span class="spinner"></span> ' . __( 'Submitting form', 'disable-comments' ) . '</p>';
 
 			$wrapper_class = '.wpinsights-goodbye-form-wrapper-'. $class_plugin_name;
 
@@ -826,7 +853,7 @@ if( ! class_exists('DCMA_Plugin_Tracker') ) :
 						var url = document.getElementById("wpinsights-goodbye-link-<?php echo $class_plugin_name; ?>");
 						$('body').toggleClass('wpinsights-form-active-<?php echo $class_plugin_name; ?>');
 						$(".wpinsights-goodbye-form-wrapper-<?php echo $class_plugin_name; ?> #wpinsights-goodbye-form").fadeIn();
-						$(".wpinsights-goodbye-form-wrapper-<?php echo $class_plugin_name; ?> #wpinsights-goodbye-form").html( '<?php echo $html; ?>' + '<div class="wpinsights-goodbye-form-footer"><div class="wpinsights-goodbye-form-buttons"><a id="wpinsights-submit-form-<?php echo $class_plugin_name; ?>" class="wpinsights-submit-btn" href="#"><?php _e( 'Submit and Deactivate', 'plugin-usage-tracker' ); ?></a>&nbsp;<a class="wpsp-put-deactivate-btn" href="'+url+'"><?php _e( 'Just Deactivate', 'plugin-usage-tracker' ); ?></a></div></div>');
+						$(".wpinsights-goodbye-form-wrapper-<?php echo $class_plugin_name; ?> #wpinsights-goodbye-form").html( '<?php echo $html; ?>' + '<div class="wpinsights-goodbye-form-footer"><div class="wpinsights-goodbye-form-buttons"><a id="wpinsights-submit-form-<?php echo $class_plugin_name; ?>" class="wpinsights-submit-btn" href="#"><?php _e( 'Submit and Deactivate', 'disable-comments' ); ?></a>&nbsp;<a class="wpsp-put-deactivate-btn" href="'+url+'"><?php _e( 'Just Deactivate', 'disable-comments' ); ?></a></div></div>');
 						$('#wpinsights-submit-form-<?php echo $class_plugin_name; ?>').on('click', function(e){
 							// As soon as we click, the body of the form should disappear
 							$("#wpinsights-goodbye-form-<?php echo $class_plugin_name; ?> .wpinsights-goodbye-form-body").fadeOut();
