@@ -3,7 +3,7 @@ Contributors: Asif2BD
 Donate link: http://wordpressfoundation.org/donate/
 Tags: Comments, Attachments, Attachments Comment, Disable Comments, Disable Attachment Comments, Attachments Comment, Disable Media Comments
 Requires at least: 2.5.0
-Tested up to: 5.5.1
+Tested up to: 6.0
 Requires PHP: 5.4
 Stable tag: 0.2.2
 License: GPLv3
